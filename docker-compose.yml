@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile-db
+    expose:
+      - 27017
+    volumes:
+      - /data/db
+    env_file:
+      - ./env
+  
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile-api
+    expose:
+      - 80
+    ports:
+      - 3000:80
+    depends_on:
+      - db
+    env_file:
+      - ./env
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile-web
+    volumes:
+      - ./web/src/public/:/usr/shared/nginx/html
+    expose:
+      - 80
+    ports:
+      - 8001:80
+    env_file:
+      - ./env

@@ -1,0 +1,4 @@
+FROM node
+ADD ./api/src /usr/src/app
+WORKDIR /usr/src/app
+CMD npm install bcrypt && npm install && npm start

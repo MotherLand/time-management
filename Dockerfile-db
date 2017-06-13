@@ -1,0 +1,5 @@
+FROM mongo
+ADD ./db/seed.js /home/seed.js
+RUN chmod 777 /home/seed.js
+ADD ./db/seed.sh /home/seed.sh
+RUN chmod 777 /home/seed.sh
