@@ -67,6 +67,14 @@ app.use(function (req, res) {
     })
 });
 
+// error handler
+app.use(function (err, req, res, next) {
+    res.status(404).json({
+        name: 'ApplicationError',
+        detail: 'We could not find the resource requested'
+    })
+})
+
 // rock and roll
 app.listen(config.listenPort);
 
