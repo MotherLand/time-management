@@ -6,6 +6,11 @@ const ObjectId = require('mongoose').Types.ObjectId
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
 
+const _emit_task_updates = (request, task) => {
+    request.app.io.emit('ADMIN_CHANNEL', { action: 'TASK_UPDATES', user: task.user });
+    request.app.io.emit('USER_CHANNEL_' + task.user, { action: 'TASK_UPDATES', user: task.user });
+}
+
 const _getFilter = (request) => {
     var filter = {}
 
@@ -35,7 +40,7 @@ TaskRouter.get('/', (request, response) => {
     TaskModel.getDailySums(filter, (err, dailySums) => {
 
         var datesAndHours = {}
-        Array.prototype.forEach.call(dailySums, function(day) {
+        Array.prototype.forEach.call(dailySums, function (day) {
             datesAndHours[day._id.valueOf()] = day.hours
         })
 
@@ -110,6 +115,7 @@ TaskRouter.post('/', (request, response) => {
         if (err) {
             return response.status(500).json(err)
         }
+        _emit_task_updates(request, task);
         response.json(task)
     })
 })
@@ -147,6 +153,7 @@ TaskRouter.put('/:id', (request, response) => {
                 if (err) {
                     return response.status(500).json(err)
                 }
+                _emit_task_updates(request, task)
                 response.json(task)
             })
         })
@@ -183,6 +190,7 @@ TaskRouter.delete('/:id', (request, response) => {
                 if (err) {
                     return response.status(500).json(err)
                 }
+                _emit_task_updates(request, task)
                 response.json({})
             })
         })

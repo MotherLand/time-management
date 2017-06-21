@@ -1,7 +1,7 @@
 'use strict'
 import axios from 'axios'
-import {API_URL} from 'config'
-import {asyncCompleteFail, getErrors, hideError} from 'actions'
+import { API_URL } from 'config'
+import { asyncCompleteFail, getErrors, hideError } from 'actions'
 
 export function saveTask(task) {
     var url = 'http://' + API_URL + '/task'
@@ -11,12 +11,12 @@ export function saveTask(task) {
         method = 'put'
     }
     return (dispatch) => {
-        axios({method: method, url: url, data: task}).then((res) => {
+        axios({ method: method, url: url, data: task }).then((res) => {
             const response = res.data
             dispatch(taskCreated())
             dispatch(finishedEditingTask())
             //grab the tasks for the owner of the recently added task
-            dispatch(fetchTasks({user: response.data.user}))
+            dispatch(fetchTasks({ user: response.data.user }))
         }, (err) => {
             dispatch(asyncCompleteFail(getErrors(err)))
             setTimeout(() => {
@@ -104,33 +104,37 @@ export function loadUserOptions() {
 }
 
 export const taskCreated = () => {
-    return {type: 'TASK_CREATED_OK'}
+    return { type: 'TASK_CREATED_OK' }
 }
 
 export const tasksFetched = (tasksList) => {
-    return {type: 'TASKS_FETCHED_OK', tasksList}
+    return { type: 'TASKS_FETCHED_OK', tasksList }
 }
 
 export const exportTasksFetched = (exportTasksList) => {
-    return {type: 'TASKS_EXPORT_FETCHED_OK', exportTasksList}
+    return { type: 'TASKS_EXPORT_FETCHED_OK', exportTasksList }
 }
 
 export const editTask = (task) => {
-    return {type: 'TASK_EDIT', task}
+    return { type: 'TASK_EDIT', task }
 }
 
 export const finishedEditingTask = () => {
-    return {type: 'TASK_FINISHED_EDITING'}
+    return { type: 'TASK_FINISHED_EDITING' }
 }
 
 export const exportTasks = (filter) => {
-    return {type: 'TASK_EXPORT', filter}
+    return { type: 'TASK_EXPORT', filter }
 }
 
 export const updateFilter = (filter) => {
-    return {type: 'TASK_FILTER_UPDATE', filter}
+    return { type: 'TASK_FILTER_UPDATE', filter }
 }
 
 export const userOptionsFetched = (userOptions) => {
-    return {type: 'TASK_USER_OPTIONS_FETCHED', userOptions}
+    return { type: 'TASK_USER_OPTIONS_FETCHED', userOptions }
+}
+
+export const updateTaskList = (message) => {
+    return { type: 'TASK_UPDATE_LIST' }
 }

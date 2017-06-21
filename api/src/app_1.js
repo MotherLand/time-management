@@ -69,11 +69,20 @@ app.use('/api/v1/task', task.routes)
 app.use(function (req, res) {
     res.send({});
 });
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+wss.on('connection', function connection(ws, req) {
+    const location = url.parse(req.url, true);
+    // You might use location.query.access_token to authenticate or share sessions
+    // or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
 
+    ws.on('message', function incoming(message) {
+        console.log('received: %s', message);
+    });
 
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-app.io = io
-server.listen(config.listenPort, function listening() {
+    ws.send('something');
+});
+
+server.listen(3000, function listening() {
     console.log('Listening on %d', server.address().port);
 });

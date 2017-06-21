@@ -1,8 +1,11 @@
 import React from 'react';
 import TaskForm from 'TaskForm';
 import TaskList from 'TaskList';
-import {connect} from 'react-redux';
-import {fetchTasks} from 'taskActions';
+import { connect } from 'react-redux';
+import { fetchTasks } from 'taskActions';
+
+import io from 'socket.io-client'
+let socket = io(`ws://127.0.0.1:3000`)
 
 class TasksMain extends React.Component {
 
@@ -11,6 +14,21 @@ class TasksMain extends React.Component {
         this.getTasksOwner = this
             .getTasksOwner
             .bind(this);
+    }
+
+    componentDidUpdate() {
+        const userChannel = 'USER_CHANNEL_' + this.props.loggedUser._id;
+        var _dispatch = this.props.dispatch
+        if (!(socket._callbacks['$' + userChannel])) {
+            socket.on(userChannel, function (data) {
+                _dispatch(fetchTasks({ user: data.user }))
+            });
+        }
+        if (!(socket._callbacks['$ADMIN_CHANNEL']) && this.props.loggedUser.role == 'admin') {
+            socket.on('ADMIN_CHANNEL', function (data) {
+                _dispatch(fetchTasks({ user: data.user }))
+            });
+        }
     }
 
     getTasksOwner() {
@@ -26,16 +44,16 @@ class TasksMain extends React.Component {
                 <div className="panel panel-default">
                     <div className="panel-heading">Add/Edit Tasks</div>
                     <div className="panel-body">
-                        <TaskForm/>
+                        <TaskForm />
                     </div>
                 </div>
-                <hr/>
+                <hr />
                 <div className="panel panel-default">
                     <div className="panel-heading">
                         <h3>{this.getTasksOwner()}</h3>
                     </div>
                     <div className="panel-body">
-                        <TaskList/>
+                        <TaskList />
                     </div>
                 </div>
             </div>
@@ -44,6 +62,6 @@ class TasksMain extends React.Component {
 }
 
 module.exports = connect((state) => {
-    return {loggedUser: state.user, viewingTasksForUser: state.tasks.viewingTasksForUser}
+    return { loggedUser: state.user, viewingTasksForUser: state.tasks.viewingTasksForUser }
 
 })(TasksMain)
